@@ -9,6 +9,14 @@ services:
     ports:
       - '5432:5432'
 
+  mongo:
+    image: mongo:8.0.0-rc4
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
   cache:
     image:
       redis:7.2.5-alpine
