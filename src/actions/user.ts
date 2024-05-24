@@ -8,7 +8,6 @@ interface CreateUserOptions {
   email: string;
   password: string;
 }
-
 export const createUser = async (options: CreateUserOptions) => {
   const passwordHash = await hashPassword(options.password);
 
@@ -16,9 +15,13 @@ export const createUser = async (options: CreateUserOptions) => {
     data: {
       username: options.username,
       email: options.email,
-      password: options.password,
+      password: passwordHash,
     },
   });
 
   return user;
+};
+
+export const getUserByEmail = (email: string) => {
+  return prisma.user.findUnique({ where: { email } });
 };

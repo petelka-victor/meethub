@@ -1,3 +1,5 @@
+import { getUserByEmail } from '@/actions/user';
+import { verifyPassword } from '@/utils/password';
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
@@ -9,18 +11,27 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials, req) {
-        const res = await fetch('/your/endpoint', {
-          method: 'POST',
-          body: JSON.stringify(credentials),
-          headers: { 'Content-Type': 'application/json' },
-        });
-        const user = await res.json();
-
-        if (res.ok && user) {
-          return user;
+        if (!credentials) {
+          return null;
         }
-        return null;
+
+        const user = await getUserByEmail(credentials.email);
+
+        if (!user) {
+          return null;
+        }
+
+        const isPasswordValid = await verifyPassword(credentials.password, user.password);
+
+        if (!isPasswordValid) {
+          return null;
+        }
+
+        return user;
       },
     }),
   ],
+  pages: {
+    signIn: '/sign-in',
+  },
 };
